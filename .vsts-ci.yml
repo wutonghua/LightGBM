@@ -1,6 +1,10 @@
 variables:
   PYTHON_VERSION: 3.7
   CONDA_ENV: test-env
+resources:
+  containers:
+  - container: ubuntu1604
+    image: lightgbm/vsts-agent:ubuntu-16.04
 jobs:
 ###########################################
 - job: Linux
@@ -9,6 +13,7 @@ jobs:
     COMPILER: gcc
   pool:
     vmImage: 'ubuntu-16.04'
+  container: ubuntu1604
   strategy:
     maxParallel: 6
     matrix:
@@ -120,6 +125,11 @@ jobs:
       environmentName: $(CONDA_ENV)
       packageSpecs: 'python=$(PYTHON_VERSION) numpy nose scipy scikit-learn pandas matplotlib python-graphviz pytest'
       createOptions: '-q'
+  # - powershell: |
+  #     mkdir D:/lightgbm/test-env
+  #     conda create -p D:/lightgbm/test-env -q -y python=$env:PYTHON_VERSION numpy nose scipy scikit-learn pandas matplotlib python-graphviz pytest joblib
+  #     activate D:/lightgbm/test-env
+  #   displayName: Install packages
   - powershell: $(Build.SourcesDirectory)/.ci/test_windows.ps1
     displayName: Test
   - task: PublishBuildArtifacts@1
